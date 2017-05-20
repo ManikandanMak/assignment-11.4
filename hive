@@ -1,0 +1,60 @@
+create table if not exists real1(street string,
+city string,
+zip int,
+state string,
+beds int,
+baths int,
+sqft int,
+type string,
+date array<string>,
+price int,
+latitude double,
+longitude double)
+row format delimited
+fields terminated by ','
+collection items terminated by ' '
+TBLPROPERTIES("skip.header.line.count"="1");
+
+
+load data local inpath '/home/acadgild/Downloads/real state.csv' into table real1; 
+
+select city,price from real1 where price >= 10000;
+
+
+select city,street,price from real where real1price in (select s.price from (select min(price) as price from real1 where state =='CA')s);
+ 
+ create table real2(street string,
+    > city string,
+    > zip int,
+    > state string,
+    > beds int,
+    > baths int,
+    > sqft int,
+    > type string,
+    > date string,
+    > price int,
+    > latitude double,
+    > longitude double);
+
+ insert overwrite table real2
+    > select street,city,zip,state,beds,baths,sqft,type,
+    > CONCAT(date[2],'-',case date[1]
+    > when 'Jan' then '01'
+    > when 'Feb' then '02'
+    > when 'Mar' then '03'
+    > when 'Apr' then '04'
+    > when 'May' then '05'
+    > when 'Jun' then '06'
+    > when 'Jul' then '07'
+    > when 'Aug' then '08'
+    > when 'Sep' then '09'
+    > when 'Oct' then '10'
+    > when 'Nov' then '11'
+    > when 'Dec' then '12'
+    > end,'-',date[5]),
+    > price,latitude,longitude from real1;
+
+
+hive> select * from real2 where price >= 60000 and price <= 120000 and sqft > 1450 and FROM_UNIXTIME(UNIX_TIMESTAMP(date,'dd-mm'),'dd-mm')> '17-05' and beds >= 3 and baths >=2 order by price DESC limit 5;
+
+hive> select city,baths,sqft,price,type,beds from real1 where beds >=2;
